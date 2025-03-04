@@ -15,9 +15,9 @@ class RG():
             baudrate=115200,
             timeout=1)
         if gripper not in ['rg2', 'rg6']:
-            print("Please specify either rg2 or rg6.")
+            print("Please specify either rg2 or rg6")
             return
-        self.gripper = gripper  # RG2/6
+        self.gripper = gripper  # RG2/6.
         if self.gripper == 'rg2':
             self.max_width = 1100
             self.max_force = 400
@@ -25,23 +25,7 @@ class RG():
             self.max_width = 1600
             self.max_force = 1200
         self.open_connection()
-
-        # Read 50 registers starting from address 0
-        address = 0
-        count = 5
-        unit = 1  # Change this based on your device ID
-
-        response = self.client.read_holding_registers(address=address, count=count, unit=unit)
-
-        # Validate response
-        if response.isError():
-            print(f"Modbus Error: {response}")
-        else:
-            registers = response.registers  # Get register values
-            indexes = list(range(address, address + count))  # Compute register indexes
-            print(f"Register indexes: {indexes}")
-            print(f"Register values: {registers}")
-
+    
     def open_connection(self):
         """Opens the connection with a gripper."""
         self.client.connect()
@@ -49,7 +33,7 @@ class RG():
     def close_connection(self):
         """Closes the connection with the gripper."""
         self.client.close()
-
+    
     def get_fingertip_offset(self):
         """Reads the current fingertip offset in 1/10 millimeters.
         Please note that the value is a signed two's complement number.
@@ -209,4 +193,3 @@ class RG():
         print("""Reset power to the gripper to clear the error.""")
         self.client.write_register(address=209, value=1, unit=65)
         time.sleep(2)
-
