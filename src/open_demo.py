@@ -15,12 +15,12 @@ def run_demo():
               str(rg.get_width_with_offset()) +
               " mm")
 
-        #rg.open_gripper()     # fully opened
+        rg.open_gripper()     # fully opened
         while True:
             time.sleep(0.5)
             if not rg.get_status()[0]:
                 break
-        rg.close_gripper()    # fully closed
+        #rg.close_gripper()    # fully closed
         while True:
             time.sleep(0.5)
             if not rg.get_status()[0]:
@@ -61,4 +61,3 @@ if __name__ == '__main__':
     toolchanger_ip = args.ip
     toolchanger_port = args.port
     run_demo()
-    status_loop()

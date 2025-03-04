@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pymodbus.client.sync import ModbusTcpClient as ModbusClient
-
+import time
 
 class RG():
 
@@ -25,6 +25,22 @@ class RG():
             self.max_width = 1600
             self.max_force = 1200
         self.open_connection()
+
+        # Read 50 registers starting from address 0
+        address = 0
+        count = 5
+        unit = 1  # Change this based on your device ID
+
+        response = self.client.read_holding_registers(address=address, count=count, unit=unit)
+
+        # Validate response
+        if response.isError():
+            print(f"Modbus Error: {response}")
+        else:
+            registers = response.registers  # Get register values
+            indexes = list(range(address, address + count))  # Compute register indexes
+            print(f"Register indexes: {indexes}")
+            print(f"Register values: {registers}")
 
     def open_connection(self):
         """Opens the connection with a gripper."""
@@ -91,23 +107,29 @@ class RG():
             status_list[0] = 1
         if int(status[-2]):
             print("An internal- or external grip is detected.")
-            status_list[1] = 1
+            self.reset_power()
+            time.sleep(2)
         if int(status[-3]):
             print("Safety switch 1 is pushed.")
-            status_list[2] = 1
+            self.reset_power()
+            time.sleep(2)            
         if int(status[-4]):
             print("Safety circuit 1 is activated so it will not move.")
-            status_list[3] = 1
+            self.reset_power()
+            time.sleep(2)
         if int(status[-5]):
             print("Safety switch 2 is pushed.")
-            status_list[4] = 1
+            self.reset_power()
+            time.sleep(2)
         if int(status[-6]):
             print("Safety circuit 2 is activated so it will not move.")
-            status_list[5] = 1
+            self.reset_power()
+            time.sleep(2)
         if int(status[-7]):
             print("Any of the safety switch is pushed.")
-            status_list[6] = 1
-
+            self.reset_power()
+            time.sleep(2)
+        
         return status_list
 
     def get_width_with_offset(self):
@@ -182,4 +204,9 @@ class RG():
         print("Start moving gripper.")
         result = self.client.write_registers(
             address=0, values=params, unit=65)
+    
+    def reset_power(self):
+        print("""Reset power to the gripper to clear the error.""")
+        self.client.write_register(address=209, value=1, unit=65)
+        time.sleep(2)
 
