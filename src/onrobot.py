@@ -25,7 +25,7 @@ class RG():
             self.max_width = 1600
             self.max_force = 1200
         self.open_connection()
-    
+
     def open_connection(self):
         """Opens the connection with a gripper."""
         self.client.connect()
@@ -86,33 +86,33 @@ class RG():
             address=268, count=1, unit=65)
         status = format(result.registers[0], '016b')
         status_list = [0] * 7
+        # once power is reset all the errors will be cleared. so return statements are added to stop the execution.
         if int(status[-1]):
             print("A motion is ongoing so new commands are not accepted.")
             status_list[0] = 1
         if int(status[-2]):
             print("An internal- or external grip is detected.")
             self.reset_power()
-            time.sleep(2)
+            return status_list
         if int(status[-3]):
             print("Safety switch 1 is pushed.")
-            self.reset_power()
-            time.sleep(2)            
+            self.reset_power()   
+            return status_list     
         if int(status[-4]):
             print("Safety circuit 1 is activated so it will not move.")
             self.reset_power()
-            time.sleep(2)
+            return status_list
         if int(status[-5]):
             print("Safety switch 2 is pushed.")
             self.reset_power()
-            time.sleep(2)
+            return status_list
         if int(status[-6]):
             print("Safety circuit 2 is activated so it will not move.")
             self.reset_power()
-            time.sleep(2)
+            return status_list
         if int(status[-7]):
             print("Any of the safety switch is pushed.")
             self.reset_power()
-            time.sleep(2)
         
         return status_list
 
@@ -191,5 +191,6 @@ class RG():
     
     def reset_power(self):
         print("""Reset power to the gripper to clear the error.""")
-        self.client.write_register(address=209, value=1, unit=65)
-        time.sleep(2)
+        self.client.write_register(address=0, value=int(2), unit=63)
+        time.sleep(5)
+        self.open_connection()

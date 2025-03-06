@@ -11,18 +11,21 @@ def run_demo():
     """Runs gripper open-close demonstration once."""
     if gripper == "sga":
         grip_obj = SG(toolchanger_ip, toolchanger_port)
-        grip_obj.set_model_id(2)
-        grip_obj.set_gentle(True)
-        grip_obj.set_init()
-        grip_obj.set_move()
     else:
         grip_obj = RG(gripper, toolchanger_ip, toolchanger_port)
     
-    target = 115
-    while grip_obj.get_gp_wd() != target:
-        print(grip_obj.get_gp_wd())
-        grip_obj.set_target(target)    
-    print(f"Current width is: {grip_obj.get_gp_wd()}")
+    target = [110,200,300,760]
+    for tr in target:
+        print(f"Width before target input: {grip_obj.get_gp_wd()}")
+        print(f"Target width: {tr}")
+        grip_obj.set_target(tr)    
+        while True:
+            time.sleep(1)
+            result = grip_obj.get_status()
+            if not bool(int(result[0])):
+                break
+        print(f"Current width is: {grip_obj.get_gp_wd()}")
+        time.sleep(1)
 
     grip_obj.close_connection()
 

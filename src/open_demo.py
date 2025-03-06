@@ -9,7 +9,6 @@ from onrobot import RG
 def run_demo():
     """Runs gripper open-close demonstration once."""
     rg = RG(gripper, toolchanger_ip, toolchanger_port)
-
     if not rg.get_status()[0]:  # not busy
         print("Current hand opening width: " +
               str(rg.get_width_with_offset()) +
